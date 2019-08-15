@@ -7,7 +7,10 @@ import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -17,7 +20,9 @@ import java.util.List;
  * @version 1.0
  * @date 2019/8/14 17:46
  */
+@Component
 public class MyConsumer {
+    private static final Logger logger = LoggerFactory.getLogger(MyConsumer.class);
     @Value("${apache.rocketmq.consumer.PushConsumer}")
     private String pushConsumerGroup;
 
@@ -29,6 +34,7 @@ public class MyConsumer {
         //指定NameServer地址，多个地址以 ; 隔开
         defaultMQPushConsumer.setNamesrvAddr(namesrvAddr);
 
+        logger.error("消费者启动..........");
 
         try {
             ////订阅MyTopic下Tag为MyTag的消息
@@ -45,9 +51,7 @@ public class MyConsumer {
                         for (MessageExt messageExt : list){
 
                             String messagebody = new String(messageExt.getBody(),"utf-8");
-
-
-                            System.out.println("--消费消息："+messagebody+" || 消息id"+messageExt.getMsgId());
+                            logger.error("--消费消息："+messagebody+" || 消息id"+messageExt.getMsgId());
 
                         }
                     } catch (Exception e) {
